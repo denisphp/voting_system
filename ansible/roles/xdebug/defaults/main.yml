@@ -1,0 +1,7 @@
+---
+# defaults file for xdebug
+
+xdebug_template_src_file: xdebug.ini.j2 # Path of a Jinja2 formatted template on the local server. This can be a relative or absolute path.
+xdebug:
+  remote_port: 9000
+  remote_host: 10.0.77.1

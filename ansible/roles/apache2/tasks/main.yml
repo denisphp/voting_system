@@ -1,0 +1,50 @@
+---
+# tasks file for apache2
+
+- name: ensure the Apache2 installed
+  apt: pkg=apache2 state=latest
+
+- name: ensure required modules installed
+  apt: pkg={{ item }} state=latest
+  with_items: apache_install_modules
+
+- name: enable Apache modules
+  shell: a2enmod {{ item }}
+  with_items: apache_enable_modules
+
+- name: set APACHE_RUN_USER and APACHE_RUN_GROUP
+  lineinfile: dest=/etc/apache2/envvars regexp="^export {{ item.param }}=" line="export {{ item.param }}={{ item.value }}"
+  with_items :
+    - { param: APACHE_RUN_USER, value: "{{ apache_run_user }}" }
+    - { param: APACHE_RUN_GROUP, value: "{{ apache_run_group }}" }
+
+- name: copy servername file for Apache
+  template: src="{{ apache_servername_src_file }}" dest=/etc/apache2/conf-available/servername.conf owner=root mode=0644
+
+- name: enable Apache servername
+  command: creates=/etc/apache2/conf-enabled/servername.conf ln -s /etc/apache2/conf-available/servername.conf /etc/apache2/conf-enabled/servername.conf
+
+- name: copy ports file for Apache
+  template: src="{{ apache_ports_src_file }}" dest=/etc/apache2/ports.conf owner=root mode=0644
+
+- name: remove old virtual hosts
+  shell: rm /etc/apache2/sites-available/* -Rf && rm /etc/apache2/sites-enabled/* -Rf
+
+- name: change default Apache virtualhost configuration
+  template: src="{{ apache_default_virtualhost_src_file }}" dest="/etc/apache2/sites-available/default.conf"
+
+- name: enable Apache default host
+  command: creates=/etc/apache2/sites-enabled/000-default.conf ln -s /etc/apache2/sites-available/default.conf /etc/apache2/sites-enabled/000-default.conf
+
+- name: add Apache virtualhosts
+  include: vhosts.yml
+
+- name: add Apache SSL virtualhosts
+  include: ssl_vhosts.yml
+
+- name: remove default index.html from /var/www
+  file: path=/var/www/index.html state=absent
+
+- name: make sure the Apache started
+  service: name=apache2 state=restarted enabled=yes
+  notify: restart apache

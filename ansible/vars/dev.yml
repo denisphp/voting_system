@@ -1,0 +1,72 @@
+###################################
+
+project_root_dir: /var/www/voting_system
+
+###################################
+#initial
+hostname: voting-system.local
+packages: [
+  git-core,
+  curl,
+  wget,
+  htop,
+  python-psycopg2,
+  libpq-dev,
+  unzip,
+  zip,
+  expect-dev,
+  mc,
+  php5-dev,
+  php5-cli,
+  php5-pgsql,
+  php5-mysql,
+  php5-curl,
+  php5-gd,
+  php5-mcrypt,
+  php5-intl
+]
+
+#apache2
+apache_install_modules:
+  - libapache2-mod-php5
+  - libapache2-mod-xsendfile
+
+apache_enable_modules:
+  - ssl
+  - rewrite
+  - xsendfile
+
+apache_run_user: 'www-data'
+apache_run_group: 'www-data'
+apache_server_name: 'localhost'
+default_apache_document_root: '/var/www'
+# Param `template` at `apache_vhosts` or `apache_ssl_vhosts` - path of a Jinja2 formatted template on the local server.
+# This can be a relative or absolute path WITHOUT `.j2` prefix
+apache_vhosts: [
+    { name: 'voting-system.local', port: '80', root: '/var/www/voting_system/web', email: 'admin@localhost', template: 'virtualhost' },
+]
+ssl_certs_files: [
+]
+
+###################################
+#xdebug
+xdebug:
+  remote_port: 9000
+  remote_host: 192.168.88.1
+
+###################################
+#composer
+composer_global_require: ""
+
+###################################
+#mariadb
+mysql_root_pass: pass
+mariadb:
+    root_password: "{{ mysql_root_pass }}"
+    user: vote
+    password: "pass"
+    databases: []
+
+
+###################################
+#finally

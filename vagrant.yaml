@@ -1,0 +1,21 @@
+vm:
+  boot_timeout: 300
+  box: "ubuntu/trusty64"
+  check_update: true
+  cpus: "auto" # For autodetect (all system CPUs)
+#  memory: "auto" # For autodetect (1/4 system memory)
+  memory: 1024
+  cpuexecutioncap: "90"
+  name: "voting-system"
+sync: [
+  { synced_folder: "/var/www/voting_system", vagrant_folder: "/var/www/voting_system" }
+]
+network:
+  private_ip: "192.168.33.16"
+  http_port: 8888
+host:
+  name: "voting-system.local"
+  aliases: []
+ansible:
+  playbook: "ansible/dev.yml"
+  inventory_path: "ansible/dev"
