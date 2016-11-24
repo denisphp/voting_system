@@ -44,6 +44,7 @@ default_apache_document_root: '/var/www'
 # This can be a relative or absolute path WITHOUT `.j2` prefix
 apache_vhosts: [
     { name: 'voting-system.local', port: '80', root: '/var/www/voting_system/web', email: 'admin@localhost', template: 'virtualhost-dev' },
+    { name: 'db.voting-system.local', port: '80', root: '/usr/share/phpmyadmin', email: 'admin@localhost', template: 'phpmyadmin' }
 ]
 ssl_certs_files: [
 ]
@@ -65,7 +66,9 @@ mariadb:
     root_password: "{{ mysql_root_pass }}"
     user: vote
     password: "pass"
-    databases: []
+    databases: [
+      "vote"
+    ]
 
 
 ###################################

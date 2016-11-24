@@ -1,0 +1,59 @@
+---
+# tasks file for phpmyadmin
+
+- set_fact:
+    phpmyadmin_installed: false
+    installed_correct_phpmyadmin_version: false
+
+- name: determine current phpmyadmin version
+  shell: cat /usr/share/phpmyadmin/libraries/Config.class.php | grep PMA_VERSION | head -n 1 | awk -F ',' '{print $2}' | awk -F "'" '{print $2}' | tr -d ' '
+  register: current_phpmyadmin_version_command
+  ignore_errors: true
+
+- set_fact: current_phpmyadmin_version={{current_phpmyadmin_version_command.stdout}}
+- set_fact: phpmyadmin_installed={{current_phpmyadmin_version_command.rc == 0}}
+
+- name: generate blowfish secret
+  shell: date +%s | sha256sum | base64 | head -c 16 ; echo
+  register: blowfish_secret_command
+
+- set_fact: phpmyadmin_blowfish_secret={{blowfish_secret_command.stdout}}
+
+- set_fact: installed_correct_phpmyadmin_version=true
+  when: current_phpmyadmin_version|string == phpmyadmin_version|string
+
+- name: Download PHPMyAdmin
+  get_url: url=https://files.phpmyadmin.net/phpMyAdmin/{{phpmyadmin_version}}/phpMyAdmin-{{phpmyadmin_version}}-{{phpmyadmin_language}}.tar.gz dest=/tmp/phpMyAdmin-{{phpmyadmin_version}}-{{phpmyadmin_language}}.tar.gz validate_certs=no force=yes
+  when: not installed_correct_phpmyadmin_version
+
+- name: Unarchive PHPMyAdmin
+  shell: cd /tmp && tar -zxvf phpMyAdmin-{{phpmyadmin_version}}-{{phpmyadmin_language}}.tar.gz
+  when: not installed_correct_phpmyadmin_version
+
+- name: make sure PHPMyAdmin directory exists
+  shell: rm -Rf /usr/share/phpmyadmin/ && mkdir -p /usr/share/phpmyadmin/
+  when: not installed_correct_phpmyadmin_version
+
+- name: copy PHPMyAdmin
+  shell: cp -Rf /tmp/phpMyAdmin-{{phpmyadmin_version}}-{{phpmyadmin_language}}/* /usr/share/phpmyadmin/
+  when: not installed_correct_phpmyadmin_version
+
+- name: set correct permissions to PHPMyAdmin
+  shell: chmod 750 -Rf /usr/share/phpmyadmin/ && chown -Rf {{web_server_run_user}}:{{web_server_run_user}} /usr/share/phpmyadmin/
+  when: not installed_correct_phpmyadmin_version
+
+- name: copy PHPMyAdmin config
+  template: src="{{ phpmyadmin_template_src_file }}" dest=/usr/share/phpmyadmin/config.inc.php  owner={{web_server_run_user}} mode=0660
+
+- name: remove PHPMyAdmin setup folder
+  shell: rm -Rf /usr/share/phpmyadmin/setup
+  when: not installed_correct_phpmyadmin_version
+
+- name: create database for PHPMyAdmin
+  mysql_db: name={{ phpmyadmin_control_database | default('phpmyadmin') }} state=present login_user=root login_password={{ mysql_root_pass }}
+  register: phpmyadmin_database
+
+- name: import PHPMyAdmin schema
+  mysql_db: name={{ phpmyadmin_control_database | default('phpmyadmin') }} state=import login_user=root login_password={{ mysql_root_pass }}
+            target=/usr/share/phpmyadmin/sql/create_tables.sql
+  when: phpmyadmin_database is defined and phpmyadmin_database.changed == True

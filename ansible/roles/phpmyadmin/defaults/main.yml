@@ -1,0 +1,13 @@
+---
+# defaults file for phpmyadmin
+
+phpmyadmin_version: 4.5.5.1
+phpmyadmin_language: english #'english' or 'all-languages'
+web_server_run_user: www-data
+phpmyadmin_template_src_file: config.inc.php.j2 # Path of a Jinja2 formatted template on the local server. This can be a relative or absolute path.
+phpmyadmin_control_database: phpmyadmin
+phpmyadmin_mysql_host: localhost
+phpmyadmin_mysql_port: ""
+phpmyadmin_mysql_socket: ""
+phpmyadmin_mysql_connect_type: tcp
+mysql_root_pass: password

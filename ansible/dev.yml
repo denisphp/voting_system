@@ -9,4 +9,6 @@
     - apache2
 #    - xdebug
 #    - composer
+    - mariadb-10-1
+    - phpmyadmin
 #    - finally

@@ -15,7 +15,9 @@ network:
   http_port: 8888
 host:
   name: "voting-system.local"
-  aliases: []
+  aliases: [
+    "db.voting-system.local"
+  ]
 ansible:
   playbook: "ansible/dev.yml"
   inventory_path: "ansible/dev"
