@@ -43,7 +43,7 @@ default_apache_document_root: '/var/www'
 # Param `template` at `apache_vhosts` or `apache_ssl_vhosts` - path of a Jinja2 formatted template on the local server.
 # This can be a relative or absolute path WITHOUT `.j2` prefix
 apache_vhosts: [
-    { name: 'voting-system.local', port: '80', root: '/var/www/voting_system/web', email: 'admin@localhost', template: 'virtualhost' },
+    { name: 'voting-system.local', port: '80', root: '/var/www/voting_system/web', email: 'admin@localhost', template: 'virtualhost-dev' },
 ]
 ssl_certs_files: [
 ]

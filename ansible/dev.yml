@@ -4,9 +4,9 @@
   vars_files:
     - "vars/dev.yml"
   roles:
-    - initial
-    - ntpd
+#    - initial
+#    - ntpd
     - apache2
-    - xdebug
-    - composer
-    - finally
+#    - xdebug
+#    - composer
+#    - finally

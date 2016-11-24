@@ -1,0 +1,18 @@
+<VirtualHost *:{{ item.port }}>
+  ServerName {{ item.name }}
+  ServerAdmin {{ item.email|default('admin@localhost')}}
+
+  DocumentRoot {{ item.root }}
+  <Directory {{ item.root }}>
+    DirectoryIndex app_dev.php
+    Options -Indexes +FollowSymLinks +SymLinksIfOwnerMatch
+    AllowOverride None
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ app_dev.php [QSA,L]
+  </Directory>
+
+  LogLevel error
+  CustomLog ${APACHE_LOG_DIR}/{{ item.name }}-access.log combined
+  ErrorLog ${APACHE_LOG_DIR}/{{ item.name }}-error.log
+</VirtualHost>
