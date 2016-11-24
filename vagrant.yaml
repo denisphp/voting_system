@@ -3,8 +3,8 @@ vm:
   box: "ubuntu/trusty64"
   check_update: true
   cpus: "auto" # For autodetect (all system CPUs)
-#  memory: "auto" # For autodetect (1/4 system memory)
-  memory: 1024
+  memory: "auto" # For autodetect (1/4 system memory)
+#  memory: 1024
   cpuexecutioncap: "90"
   name: "voting-system"
 sync: [
