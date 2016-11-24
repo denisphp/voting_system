@@ -4,7 +4,7 @@ vm:
   check_update: true
   cpus: "auto" # For autodetect (all system CPUs)
   memory: "auto" # For autodetect (1/4 system memory)
-#  memory: 1024
+#  memory: 2048
   cpuexecutioncap: "90"
   name: "voting-system"
 sync: [

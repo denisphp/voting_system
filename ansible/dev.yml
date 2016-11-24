@@ -4,11 +4,11 @@
   vars_files:
     - "vars/dev.yml"
   roles:
-#    - initial
-#    - ntpd
+    - initial
+    - ntpd
     - apache2
-#    - xdebug
-#    - composer
+    - xdebug
+    - composer
     - mariadb-10-1
     - phpmyadmin
-#    - finally
+    - finally
